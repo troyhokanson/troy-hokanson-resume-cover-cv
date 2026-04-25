@@ -185,9 +185,9 @@ def build_navy_header(doc, *, body_top_margin_inches=1.55,
     page_w = section.page_width  # full page width including margins
     page_w_twips = page_w.emu // 635  # 1 twip = 635 EMU
     margin_twips = int(section.left_margin.emu // 635)
-    # Make the table slightly WIDER than the page so it bleeds past both edges
-    # (eliminates the thin white sliver on left and right).
-    bleed_twips = 60  # ~1mm of extra bleed past each side
+    # Make the table WIDER than the page so it bleeds past both edges
+    # (eliminates the thin white sliver on left and right when viewed in Word).
+    bleed_twips = 360  # ~0.25" of extra bleed past each side
     tbl_total_twips = page_w_twips + (bleed_twips * 2)
 
     tbl = header.add_table(rows=1, cols=1, width=page_w)
@@ -254,10 +254,10 @@ def build_navy_header(doc, *, body_top_margin_inches=1.55,
     contact_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(contact_p, before=2, after=0, line=1.15)
     shade_paragraph(contact_p, "0D1B2A")
-    sep = "   |   "
+    sep = "  |  "
     contact_text = sep.join(CONTACT_PARTS)
     rc = contact_p.add_run(contact_text)
-    set_run(rc, font=BODY_FONT, size=10, color=GOLD)
+    set_run(rc, font=BODY_FONT, size=8.5, color=GOLD)
 
 
 # ============================================================
