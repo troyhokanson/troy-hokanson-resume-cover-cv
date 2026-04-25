@@ -76,6 +76,19 @@ def shade_cell(cell, color_hex):
     tc_pr.append(shd)
 
 
+def shade_paragraph(paragraph, color_hex):
+    """Apply background fill to a paragraph (paints behind the text and across the line height)."""
+    p_pr = paragraph._p.get_or_add_pPr()
+    # Remove any existing shd
+    for old in p_pr.findall(qn("w:shd")):
+        p_pr.remove(old)
+    shd = OxmlElement("w:shd")
+    shd.set(qn("w:val"), "clear")
+    shd.set(qn("w:color"), "auto")
+    shd.set(qn("w:fill"), color_hex)
+    p_pr.append(shd)
+
+
 def set_cell_margins(cell, top=100, bottom=100, left=140, right=140):
     tc_pr = cell._tc.get_or_add_tcPr()
     tc_mar = OxmlElement("w:tcMar")
@@ -171,26 +184,31 @@ def build_navy_header(doc, *, body_top_margin_inches=1.55,
 
     page_w = section.page_width  # full page width including margins
     page_w_twips = page_w.emu // 635  # 1 twip = 635 EMU
+    margin_twips = int(section.left_margin.emu // 635)
+    # Make the table slightly WIDER than the page so it bleeds past both edges
+    # (eliminates the thin white sliver on left and right).
+    bleed_twips = 60  # ~1mm of extra bleed past each side
+    tbl_total_twips = page_w_twips + (bleed_twips * 2)
 
     tbl = header.add_table(rows=1, cols=1, width=page_w)
     tbl.autofit = False
     tbl.allow_autofit = False
 
-    # Force fixed layout, full page width, and negative left indent so the
-    # cell bleeds into and past both page margins.
     tblPr = tbl._tbl.tblPr
 
     for old in tblPr.findall(qn("w:tblW")):
         tblPr.remove(old)
     tblW = OxmlElement("w:tblW")
-    tblW.set(qn("w:w"), str(page_w_twips))
+    tblW.set(qn("w:w"), str(tbl_total_twips))
     tblW.set(qn("w:type"), "dxa")
     tblPr.append(tblW)
 
+    # Negative left indent = (-left margin - extra bleed) so the table
+    # starts beyond the left page edge and extends beyond the right.
     for old in tblPr.findall(qn("w:tblInd")):
         tblPr.remove(old)
     tblInd = OxmlElement("w:tblInd")
-    tblInd.set(qn("w:w"), str(-int(section.left_margin.emu // 635)))
+    tblInd.set(qn("w:w"), str(-(margin_twips + bleed_twips)))
     tblInd.set(qn("w:type"), "dxa")
     tblPr.append(tblInd)
 
@@ -201,43 +219,41 @@ def build_navy_header(doc, *, body_top_margin_inches=1.55,
     tblPr.append(tblLayout)
 
     cell = tbl.cell(0, 0)
-    cell.width = page_w
     shade_cell(cell, "0D1B2A")
     remove_cell_borders(cell)
-    # Cell padding tuned to UHG reference vertical rhythm
-    set_cell_margins(cell, top=260, bottom=200, left=200, right=200)
+    # Tight inner padding (top a bit larger so name sits down from top edge)
+    set_cell_margins(cell, top=260, bottom=240, left=200, right=200)
 
     tcPr = cell._tc.get_or_add_tcPr()
     tcW = tcPr.find(qn("w:tcW"))
     if tcW is None:
         tcW = OxmlElement("w:tcW")
         tcPr.append(tcW)
-    tcW.set(qn("w:w"), str(page_w_twips))
+    tcW.set(qn("w:w"), str(tbl_total_twips))
     tcW.set(qn("w:type"), "dxa")
 
-    # ---- Row 1: Name (white Garamond-Bold, centered) ----
+    # ---- Row 1: Name (white Garamond-Bold, centered, navy bg) ----
     name_p = cell.paragraphs[0]
     name_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(name_p, before=0, after=0, line=1.0)
+    shade_paragraph(name_p, "0D1B2A")
     r = name_p.add_run(NAME)
     set_run(r, font=NAME_FONT, size=28, bold=True, color=WHITE)
 
-    # ---- Row 2: Inset gold horizontal rule ----
-    # Render via a centered tab-leader run so width is controlled by the
-    # underline length, not by paragraph indents (which collapse inside
-    # table cells in LibreOffice). Width tuned to match UHG reference.
+    # ---- Row 2: Inset gold horizontal rule (rendered as gold characters
+    # over a NAVY-shaded paragraph so no white shows through) ----
     rule_p = cell.add_paragraph()
     rule_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(rule_p, before=6, after=6, line=1.0)
-    # The rule itself: a thin colored shape made from underscore characters
-    # in gold at small size. Repeat count tuned visually against UHG.
-    rule_run = rule_p.add_run("\u2500" * 78)  # box-drawing horizontal line
+    set_paragraph_format(rule_p, before=4, after=4, line=1.0)
+    shade_paragraph(rule_p, "0D1B2A")
+    rule_run = rule_p.add_run("\u2500" * 78)
     set_run(rule_run, font=BODY_FONT, size=8, color=GOLD)
 
-    # ---- Row 3: Gold contact line, centered, pipe-separated ----
+    # ---- Row 3: Gold contact line, centered, pipe-separated, navy bg ----
     contact_p = cell.add_paragraph()
     contact_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(contact_p, before=2, after=0, line=1.1)
+    set_paragraph_format(contact_p, before=2, after=0, line=1.15)
+    shade_paragraph(contact_p, "0D1B2A")
     sep = "   |   "
     contact_text = sep.join(CONTACT_PARTS)
     rc = contact_p.add_run(contact_text)
