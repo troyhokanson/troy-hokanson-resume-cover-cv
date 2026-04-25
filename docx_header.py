@@ -223,17 +223,16 @@ def build_navy_header(doc, *, body_top_margin_inches=1.55,
     set_run(r, font=NAME_FONT, size=28, bold=True, color=WHITE)
 
     # ---- Row 2: Inset gold horizontal rule ----
-    # Use a paragraph with left/right indent so the rule does not run
-    # edge-to-edge — matches UHG reference (rule sits inside contact width).
+    # Render via a centered tab-leader run so width is controlled by the
+    # underline length, not by paragraph indents (which collapse inside
+    # table cells in LibreOffice). Width tuned to match UHG reference.
     rule_p = cell.add_paragraph()
     rule_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_paragraph_format(rule_p, before=4, after=6, line=1.0)
-    rule_pf = rule_p.paragraph_format
-    rule_pf.left_indent = Inches(0.9)
-    rule_pf.right_indent = Inches(0.9)
-    add_paragraph_bottom_border(rule_p, color_hex="C9A84C", size=6, space=1)
-    rr = rule_p.add_run(" ")
-    set_run(rr, font=BODY_FONT, size=2, color=NAVY)  # invisible filler
+    set_paragraph_format(rule_p, before=6, after=6, line=1.0)
+    # The rule itself: a thin colored shape made from underscore characters
+    # in gold at small size. Repeat count tuned visually against UHG.
+    rule_run = rule_p.add_run("\u2500" * 78)  # box-drawing horizontal line
+    set_run(rule_run, font=BODY_FONT, size=8, color=GOLD)
 
     # ---- Row 3: Gold contact line, centered, pipe-separated ----
     contact_p = cell.add_paragraph()
