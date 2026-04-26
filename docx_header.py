@@ -29,7 +29,9 @@ Usage in any build script:
 DO NOT hand-roll the header in build scripts. If the locked spec needs to
 change, change it HERE and only HERE.
 
-Locked April 2026.
+Locked April 2026. Updated April 26, 2026: full-bleed navy bar fix
+(bleed_twips = full margin width) so navy header reaches the absolute
+page edge with zero white sliver on left, right, or top in Word.
 """
 
 from docx import Document
@@ -237,11 +239,15 @@ def build_navy_header(doc, *, body_top_margin_inches=1.55,
         p_el.getparent().remove(p_el)
 
     page_w = section.page_width  # full page width including margins
-    page_w_twips = page_w.emu // 635  # 1 twip = 635 EMU
+    page_w_twips = int(page_w.emu // 635)  # 1 twip = 635 EMU
     margin_twips = int(section.left_margin.emu // 635)
-    # Make the table WIDER than the page so it bleeds past both edges
-    # (eliminates the thin white sliver on left and right when viewed in Word).
-    bleed_twips = 360  # ~0.25" of extra bleed past each side
+    # Make the table WIDER than the page so it bleeds fully past both edges.
+    # Word renders the page header inside the printable area by default; to
+    # achieve a true edge-to-edge navy bar with ZERO white sliver on left,
+    # right, or top, we set the table width to (page width + 2 * margin) and
+    # indent it by -margin so it starts at the absolute left page edge and
+    # extends to the absolute right page edge.
+    bleed_twips = margin_twips  # full margin width of bleed past each side
     tbl_total_twips = page_w_twips + (bleed_twips * 2)
 
     tbl = header.add_table(rows=1, cols=1, width=page_w)
