@@ -57,7 +57,9 @@ NAME = "Troy J. Hokanson"
 # Each entry: (display_text, url_or_None). url=None means plain text (no link).
 CONTACT_PARTS = [
     ("Lakeville, MN", None),
-    ("612.352.8647", "tel:+16123528647"),
+    # tel: format kept simple (no +1, no formatting) to survive Word's link
+    # validator on round-trip saves. Word strips tel:+1xxx links on some installs.
+    ("612.352.8647", "tel:6123528647"),
     ("TroyHokanson@iCloud.com", "mailto:TroyHokanson@iCloud.com"),
     ("linkedin.com/in/troyhokanson", "https://www.linkedin.com/in/troyhokanson"),
     ("Investigative Portfolio", "https://troyhokanson.com"),
