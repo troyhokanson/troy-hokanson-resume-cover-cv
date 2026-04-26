@@ -54,12 +54,13 @@ BODY_FONT = "Calibri"
 NAME_FONT = "Garamond"  # Garamond-Bold for the name + section headings
 
 NAME = "Troy J. Hokanson"
+# Each entry: (display_text, url_or_None). url=None means plain text (no link).
 CONTACT_PARTS = [
-    "Lakeville, MN",
-    "612.352.8647",
-    "TroyHokanson@iCloud.com",
-    "linkedin.com/in/troyhokanson",
-    "Investigative Portfolio",
+    ("Lakeville, MN", None),
+    ("612.352.8647", "tel:+16123528647"),
+    ("TroyHokanson@iCloud.com", "mailto:TroyHokanson@iCloud.com"),
+    ("linkedin.com/in/troyhokanson", "https://www.linkedin.com/in/troyhokanson"),
+    ("Investigative Portfolio", "https://troyhokanson.com"),
 ]
 
 
@@ -137,6 +138,57 @@ def set_run(run, *, font=BODY_FONT, size=10.5, bold=False, italic=False, color=B
     run.font.bold = bold
     run.font.italic = italic
     run.font.color.rgb = color
+
+
+def add_hyperlink(paragraph, text, url, *, color=None, font=BODY_FONT, size=10, bold=False):
+    """Append a real, clickable hyperlink to a paragraph.
+
+    Creates a w:hyperlink element backed by a relationship in the parent part,
+    so it works in Word, in PDFs converted via LibreOffice, and is preserved
+    through ATS systems. Supports http(s), mailto:, and tel: URLs.
+    """
+    part = paragraph.part
+    r_id = part.relate_to(
+        url,
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+        is_external=True,
+    )
+    hyperlink = OxmlElement("w:hyperlink")
+    hyperlink.set(qn("r:id"), r_id)
+
+    new_run = OxmlElement("w:r")
+    rPr = OxmlElement("w:rPr")
+
+    rFonts = OxmlElement("w:rFonts")
+    rFonts.set(qn("w:ascii"), font)
+    rFonts.set(qn("w:hAnsi"), font)
+    rFonts.set(qn("w:cs"), font)
+    rPr.append(rFonts)
+
+    sz = OxmlElement("w:sz")
+    sz.set(qn("w:val"), str(int(size * 2)))
+    rPr.append(sz)
+    szCs = OxmlElement("w:szCs")
+    szCs.set(qn("w:val"), str(int(size * 2)))
+    rPr.append(szCs)
+
+    if bold:
+        b = OxmlElement("w:b")
+        rPr.append(b)
+
+    if color is not None:
+        c = OxmlElement("w:color")
+        c.set(qn("w:val"), "{:02X}{:02X}{:02X}".format(color[0], color[1], color[2]))
+        rPr.append(c)
+
+    new_run.append(rPr)
+    t = OxmlElement("w:t")
+    t.text = text
+    t.set(qn("xml:space"), "preserve")
+    new_run.append(t)
+    hyperlink.append(new_run)
+    paragraph._p.append(hyperlink)
+    return hyperlink
 
 
 def set_paragraph_format(p, *, before=0, after=0, line=1.15):
@@ -250,14 +302,21 @@ def build_navy_header(doc, *, body_top_margin_inches=1.55,
     set_run(rule_run, font=BODY_FONT, size=8, color=GOLD)
 
     # ---- Row 3: Gold contact line, centered, pipe-separated, navy bg ----
+    # Each linkable piece is a real w:hyperlink so it's clickable in Word/PDF/ATS.
     contact_p = cell.add_paragraph()
     contact_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(contact_p, before=2, after=0, line=1.15)
     shade_paragraph(contact_p, "0D1B2A")
     sep = "  |  "
-    contact_text = sep.join(CONTACT_PARTS)
-    rc = contact_p.add_run(contact_text)
-    set_run(rc, font=BODY_FONT, size=8.5, color=GOLD)
+    for i, (text, url) in enumerate(CONTACT_PARTS):
+        if i > 0:
+            sep_run = contact_p.add_run(sep)
+            set_run(sep_run, font=BODY_FONT, size=8.5, color=GOLD)
+        if url:
+            add_hyperlink(contact_p, text, url, color=GOLD, font=BODY_FONT, size=8.5)
+        else:
+            r = contact_p.add_run(text)
+            set_run(r, font=BODY_FONT, size=8.5, color=GOLD)
 
 
 # ============================================================
@@ -316,7 +375,7 @@ __all__ = [
     "BODY_FONT", "NAME_FONT", "NAME", "CONTACT_PARTS",
     "build_navy_header",
     "add_section_heading", "add_bullet", "add_job_block",
-    "set_run", "set_paragraph_format",
+    "set_run", "set_paragraph_format", "add_hyperlink",
     "shade_cell", "set_cell_margins", "remove_cell_borders",
     "add_paragraph_bottom_border",
     "new_document",
