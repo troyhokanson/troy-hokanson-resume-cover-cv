@@ -1,4 +1,4 @@
-# Troy Hokanson — Document Templates
+# Troy Hokanson — Document Templates for Investigative Job Search - Microsoft Word or PDF Format.
 
 Locked source of truth for the navy/gold header used on every DOCX resume, cover letter, and CV.
 
@@ -39,7 +39,8 @@ doc.save("/home/user/workspace/Hokanson_Resume_Employer_Role.docx")
 
 ```
 cd /home/user/workspace
-git clone https://github.com/troy-hokanson-kw-475/troy-document-templates templates
+git clone https://github.com/troy-hokanson-kw-475/troy-hokanson-resume-cover-cv
+
 ```
 
 ## Changing the locked spec
