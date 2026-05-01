@@ -32,13 +32,16 @@ change, change it HERE and only HERE.
 Locked April 2026. Updated April 26, 2026: full-bleed navy bar fix
 (bleed_twips = full margin width) so navy header reaches the absolute
 page edge with zero white sliver on left, right, or top in Word.
+Hardened May 1, 2026: added VML page-anchored rectangle as a second
+background layer, so the navy bleed is guaranteed left-to-right even
+on Word installs that clip table shading at the printable area.
 """
 
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
+from docx.oxml import OxmlElement, parse_xml
 
 
 # ============================================================
@@ -92,6 +95,33 @@ def shade_paragraph(paragraph, color_hex):
     shd.set(qn("w:color"), "auto")
     shd.set(qn("w:fill"), color_hex)
     p_pr.append(shd)
+
+
+def add_header_background_shape(paragraph, color_hex="0D1B2A"):
+    """Add a VML navy rectangle anchored to the page behind the header.
+
+    Belt-and-suspenders for the negative-indent table: some Word installs
+    clip table-cell shading at the printable area boundary even when the
+    table is indented past the page edge, leaving a thin white sliver on
+    left or right. This absolute-positioned VML rectangle is anchored to
+    the page (not the margin), so it always covers from absolute left
+    page edge to absolute right page edge. Z-order is behind text.
+    """
+    run = paragraph.add_run()
+    xml = f"""
+    <w:pict xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            xmlns:v="urn:schemas-microsoft-com:vml"
+            xmlns:o="urn:schemas-microsoft-com:office:office">
+      <v:rect id="TroyLockedHeaderNavyBackground"
+              fillcolor="#{color_hex}"
+              stroked="f"
+              style="position:absolute;margin-left:-90pt;margin-top:-28pt;width:800pt;height:112pt;z-index:-251654144;mso-position-horizontal:absolute;mso-position-horizontal-relative:page;mso-position-vertical:absolute;mso-position-vertical-relative:page">
+        <v:fill color="#{color_hex}"/>
+      </v:rect>
+    </w:pict>
+    """
+    run._r.append(parse_xml(xml))
+    return run
 
 
 def set_cell_margins(cell, top=100, bottom=100, left=140, right=140):
@@ -297,6 +327,7 @@ def build_navy_header(doc, *, body_top_margin_inches=1.55,
     name_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_paragraph_format(name_p, before=0, after=0, line=1.0)
     shade_paragraph(name_p, "0D1B2A")
+    add_header_background_shape(name_p, "0D1B2A")
     r = name_p.add_run(NAME)
     set_run(r, font=NAME_FONT, size=28, bold=True, color=WHITE)
 
