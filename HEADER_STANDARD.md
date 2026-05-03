@@ -40,7 +40,7 @@ tailor a resume, tailor a cover letter, build a resume, build a cover letter, bu
 | Name | "Troy J. Hokanson", Garamond-Bold 28pt, WHITE `#FFFFFF`, centered |
 | Rule | Thin gold `#C9A84C`, 0.75pt, centered, ~70% page width |
 | Contact row | Inter 9pt (PDF) / Calibri 10pt (DOCX), gold `#C9A84C`, centered, separator `   \|   ` |
-| Contact items | Lakeville, MN \| 612.352.8647 \| TroyHokanson@iCloud.com \| linkedin.com/in/troyhokanson \| Investigative Portfolio |
+| Contact items | Loaded from environment variables via `config.py` — see `config.example.env`. Never hardcoded. |
 | Subtitle | NONE. No role title between name and contact row. Ever. |
 | Page 2+ (PDF) | Slim 0.42" navy bar with name only in white Garamond-Bold 14pt |
 | Page 2+ (DOCX) | Same banner repeats via section header part |
@@ -120,13 +120,35 @@ cd /home/user/workspace && python3 templates/build_reference.py
 
 ## Repo
 
-Versioned at: https://github.com/troy-hokanson-kw-475/troy-document-templates (private)
+Public repo: https://github.com/troyhokanson/troy-hokanson-resume-cover-cv
 
 Pull into a fresh sandbox:
 
 ```bash
-cd /home/user/workspace && git clone https://github.com/troy-hokanson-kw-475/troy-document-templates templates
+git clone https://github.com/troyhokanson/troy-hokanson-resume-cover-cv
+cd troy-hokanson-resume-cover-cv
+cp config.example.env .env
+# Edit .env and fill in your real contact values
 ```
+
+## Contact Info Setup (Multi-Device)
+
+Contact details (phone, email, location) are loaded from environment variables — never hardcoded in the public repo.
+
+**Local machine (any device):**
+1. Copy `config.example.env` to `.env` in the repo root
+2. Fill in your real values
+3. The `.env` file is gitignored and will never be committed
+
+**GitHub Actions (automated builds):**
+Add these secrets under Settings -> Secrets and variables -> Actions:
+- `TROY_PHONE` — e.g. `612.352.8647`
+- `TROY_EMAIL` — e.g. `TroyHokanson@iCloud.com`
+- `TROY_LOCATION` — e.g. `Lakeville, MN`
+- `TROY_LINKEDIN` — e.g. `linkedin.com/in/troyhokanson`
+- `TROY_PORTFOLIO` — e.g. `https://troy-hokanson.github.io/portfolio`
+
+Builds run on any device or via Actions will inject the real values into every document header automatically.
 
 ## Skill Enforcement
 

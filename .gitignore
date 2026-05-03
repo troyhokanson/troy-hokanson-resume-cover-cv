@@ -1,3 +1,17 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# Local environment config — NEVER commit this file
+# Copy config.example.env to .env and fill in your real values
+.env
+
+# Built output files — keep built documents out of the repo
+*.pdf
+*.docx
+!reference_header.docx
+
+# Editor / OS artifacts
+.vscode/
+.idea/
+Thumbs.db

@@ -46,6 +46,7 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import os
+from config import TROY_NAME, TROY_PHONE, TROY_EMAIL, TROY_LOCATION, TROY_LINKEDIN, TROY_PORTFOLIO
 
 
 # ============================================================
@@ -61,19 +62,22 @@ BRAND = {
     "gray": HexColor("#555555"),
 }
 
-NAME = "Troy J. Hokanson"
+NAME = TROY_NAME
+# Contact info loaded from environment variables via config.py.
+# Set values in .env (local) or GitHub Actions Secrets (CI). See config.example.env.
+_phone_digits = TROY_PHONE.replace(".", "").replace("-", "").replace(" ", "")
 CONTACT_PARTS = [
-    "Lakeville, MN",
-    "612.352.8647",
-    "TroyHokanson@iCloud.com",
-    "linkedin.com/in/troyhokanson",
+    TROY_LOCATION,
+    *( [TROY_PHONE] if TROY_PHONE else [] ),
+    TROY_EMAIL,
+    TROY_LINKEDIN,
     "Investigative Portfolio",
 ]
 CONTACT_LINKS = {
-    "612.352.8647": "tel:+16123528647",
-    "TroyHokanson@iCloud.com": "mailto:TroyHokanson@iCloud.com",
-    "linkedin.com/in/troyhokanson": "https://www.linkedin.com/in/troyhokanson/",
-    "Investigative Portfolio": "https://tinyurl.com/mschm5j7",
+    **( {TROY_PHONE: f"tel:+1{_phone_digits}"} if TROY_PHONE else {} ),
+    TROY_EMAIL: f"mailto:{TROY_EMAIL}",
+    TROY_LINKEDIN: f"https://www.{TROY_LINKEDIN}" if not TROY_LINKEDIN.startswith("http") else TROY_LINKEDIN,
+    "Investigative Portfolio": TROY_PORTFOLIO,
 }
 
 # Locked margins — use these on every doc so headers + body align

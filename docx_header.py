@@ -42,6 +42,7 @@ from docx.shared import Pt, Inches, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement, parse_xml
+from config import TROY_NAME, TROY_PHONE, TROY_EMAIL, TROY_LOCATION, TROY_LINKEDIN, TROY_PORTFOLIO
 
 
 # ============================================================
@@ -58,16 +59,19 @@ GRAY = RGBColor(0x55, 0x55, 0x55)
 BODY_FONT = "Calibri"
 NAME_FONT = "Garamond"  # Garamond-Bold for the name + section headings
 
-NAME = "Troy J. Hokanson"
+NAME = TROY_NAME
 # Each entry: (display_text, url_or_None). url=None means plain text (no link).
+# Contact info is loaded from environment variables via config.py.
+# Set values in .env (local) or GitHub Actions Secrets (CI). See config.example.env.
+_phone_digits = TROY_PHONE.replace(".", "").replace("-", "").replace(" ", "")
 CONTACT_PARTS = [
-    ("Lakeville, MN", None),
+    (TROY_LOCATION, None),
     # tel: format kept simple (no +1, no formatting) to survive Word's link
     # validator on round-trip saves. Word strips tel:+1xxx links on some installs.
-    ("612.352.8647", "tel:6123528647"),
-    ("TroyHokanson@iCloud.com", "mailto:TroyHokanson@iCloud.com"),
-    ("linkedin.com/in/troyhokanson", "https://www.linkedin.com/in/troyhokanson"),
-    ("Investigative Portfolio", "https://troyhokanson.com"),
+    *( [(TROY_PHONE, f"tel:{_phone_digits}")] if TROY_PHONE else [] ),
+    (TROY_EMAIL, f"mailto:{TROY_EMAIL}"),
+    (TROY_LINKEDIN, f"https://www.{TROY_LINKEDIN}" if not TROY_LINKEDIN.startswith("http") else TROY_LINKEDIN),
+    ("Investigative Portfolio", TROY_PORTFOLIO),
 ]
 
 

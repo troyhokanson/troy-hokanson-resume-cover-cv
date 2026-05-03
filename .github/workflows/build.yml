@@ -1,0 +1,43 @@
+name: Build Reference Document
+
+# Runs on every push to main and on manual trigger
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-reference:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install python-docx reportlab pypdf2
+
+      - name: Build reference header DOCX
+        # Contact info is injected from GitHub Actions Secrets — never hardcoded.
+        # Add these secrets under: Settings -> Secrets and variables -> Actions
+        #   TROY_PHONE, TROY_EMAIL, TROY_LOCATION, TROY_LINKEDIN, TROY_PORTFOLIO
+        env:
+          TROY_PHONE:     ${{ secrets.TROY_PHONE }}
+          TROY_EMAIL:     ${{ secrets.TROY_EMAIL }}
+          TROY_LOCATION:  ${{ secrets.TROY_LOCATION }}
+          TROY_LINKEDIN:  ${{ secrets.TROY_LINKEDIN }}
+          TROY_PORTFOLIO: ${{ secrets.TROY_PORTFOLIO }}
+          TROY_NAME:      ${{ secrets.TROY_NAME }}
+        run: python build_reference.py
+
+      - name: Upload reference DOCX as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-header
+          path: reference_header.docx
+          retention-days: 30
