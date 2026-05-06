@@ -1,7 +1,10 @@
 """
 Unit tests for anti_ai_scan.scan_text.
 
-Run from the workspace root (where 'templates' is a symlink or dir):
+Run from the repo root (cloned directly):
+    python -m pytest tests/ -v
+
+Run from the workspace root (repo symlinked as templates/):
     python -m pytest templates/tests/ -v
 """
 

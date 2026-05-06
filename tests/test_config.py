@@ -1,7 +1,10 @@
 """
 Unit tests for config.py — verifies env-var loading and safe fallbacks.
 
-Run from the workspace root:
+Run from the repo root (cloned directly):
+    python -m pytest tests/ -v
+
+Run from the workspace root (repo symlinked as templates/):
     python -m pytest templates/tests/ -v
 """
 
