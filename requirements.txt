@@ -1,0 +1,14 @@
+# Troy Hokanson document template dependencies
+# Install with: pip install -r requirements.txt
+
+# DOCX generation (docx_header.py)
+python-docx>=1.1.0
+
+# PDF generation (pdf_header.py)
+reportlab>=4.0.0
+
+# PDF reading / metadata stripping (pdf_header.py → clean_pdf_metadata)
+pypdf>=4.0.0
+
+# PDF text extraction for anti-AI scan (anti_ai_scan.py)
+pdfplumber>=0.10.0

@@ -15,3 +15,17 @@ __pycache__/
 .vscode/
 .idea/
 Thumbs.db
+
+# Python packaging / testing
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Font binaries — download separately (see fonts/README.md)
+fonts/*.ttf
+fonts/*.otf
+fonts/*.woff
+fonts/*.woff2

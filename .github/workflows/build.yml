@@ -20,12 +20,21 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install python-docx reportlab pypdf2
+        run: pip install -r requirements.txt
+
+      - name: Set up workspace structure
+        # The build scripts expect the repo to be importable as the 'templates'
+        # package (e.g. from templates.docx_header import ...).
+        # Create a workspace directory and symlink the repo into it as templates/.
+        run: |
+          mkdir -p /home/runner/workspace
+          ln -s "$GITHUB_WORKSPACE" /home/runner/workspace/templates
 
       - name: Build reference header DOCX
         # Contact info is injected from GitHub Actions Secrets — never hardcoded.
         # Add these secrets under: Settings -> Secrets and variables -> Actions
         #   TROY_PHONE, TROY_EMAIL, TROY_LOCATION, TROY_LINKEDIN, TROY_PORTFOLIO
+        working-directory: /home/runner/workspace
         env:
           TROY_PHONE:     ${{ secrets.TROY_PHONE }}
           TROY_EMAIL:     ${{ secrets.TROY_EMAIL }}
@@ -33,7 +42,18 @@ jobs:
           TROY_LINKEDIN:  ${{ secrets.TROY_LINKEDIN }}
           TROY_PORTFOLIO: ${{ secrets.TROY_PORTFOLIO }}
           TROY_NAME:      ${{ secrets.TROY_NAME }}
-        run: python build_reference.py
+        run: python templates/build_reference.py
+
+      - name: Run unit tests
+        working-directory: /home/runner/workspace
+        env:
+          TROY_PHONE:     ${{ secrets.TROY_PHONE }}
+          TROY_EMAIL:     ${{ secrets.TROY_EMAIL }}
+          TROY_LOCATION:  ${{ secrets.TROY_LOCATION }}
+          TROY_LINKEDIN:  ${{ secrets.TROY_LINKEDIN }}
+          TROY_PORTFOLIO: ${{ secrets.TROY_PORTFOLIO }}
+          TROY_NAME:      ${{ secrets.TROY_NAME }}
+        run: python -m pytest templates/tests/ -v
 
       - name: Upload reference DOCX as artifact
         uses: actions/upload-artifact@v4

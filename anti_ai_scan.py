@@ -22,6 +22,13 @@ import sys
 from pathlib import Path
 
 try:
+    from config import TROY_NAME, TROY_PHONE, TROY_EMAIL
+except ImportError:
+    TROY_NAME = "Troy J. Hokanson"
+    TROY_PHONE = ""
+    TROY_EMAIL = ""
+
+try:
     import pdfplumber
 except ImportError:
     pdfplumber = None
@@ -80,14 +87,16 @@ def _extract(pdf_path: str) -> str:
 def _strip_header(text: str) -> str:
     """Remove the locked navy header repeated rows (name + contact line)
     so they are not falsely flagged."""
+    # Build contact fingerprint: header row contains both phone and email username
+    _email_user = TROY_EMAIL.split("@")[0] if "@" in TROY_EMAIL else TROY_EMAIL
     out = []
     for line in text.splitlines():
         s = line.strip()
-        if s.startswith("Troy J. Hokanson"):
+        if TROY_NAME and s.startswith(TROY_NAME):
             continue
         if s.startswith("───") or set(s) <= {"─", " "}:
             continue
-        if "612.352.8647" in s and "TroyHokanson" in s:
+        if TROY_PHONE and TROY_PHONE in s and _email_user and _email_user in s:
             continue
         out.append(line)
     return "\n".join(out)
