@@ -52,7 +52,7 @@ tailor a resume, tailor a cover letter, build a resume, build a cover letter, bu
 
 ```python
 import sys
-sys.path.insert(0, "/home/user/workspace")
+sys.path.insert(0, "/path/to/cloned/repo")   # repo root — contains the templates/ package
 from templates.docx_header import (
     new_document, build_navy_header,
     add_section_heading, add_bullet, add_job_block,
@@ -69,7 +69,7 @@ doc.save("output.docx")
 
 ```python
 import sys
-sys.path.insert(0, "/home/user/workspace")
+sys.path.insert(0, "/path/to/cloned/repo")   # repo root — contains the templates/ package
 from reportlab.lib.pagesizes import LETTER
 from reportlab.platypus import SimpleDocTemplate
 from templates.pdf_header import draw_page1_header, draw_pageN_header, MARGIN, clean_pdf_metadata
@@ -101,12 +101,12 @@ c.save()
 
 ## Visual Ground Truth
 
-`templates/reference_header.docx` — open this and any new doc side by side. Page 1 must match. If it doesn't, the build script is wrong, not the module.
+`reference_header.docx` — open this and any new doc side by side. Page 1 must match. If it doesn't, the build script is wrong, not the module.
 
 Rebuild the reference after any module change:
 
 ```bash
-cd /home/user/workspace && python3 templates/build_reference.py
+cd /home/user/workspace && python3 build_reference.py
 ```
 
 ## Hard Rules

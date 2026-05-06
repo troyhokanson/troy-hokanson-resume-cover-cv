@@ -20,7 +20,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install python-docx reportlab pypdf2
+        run: pip install python-docx reportlab pypdf pdfplumber
 
       - name: Build reference header DOCX
         # Contact info is injected from GitHub Actions Secrets — never hardcoded.

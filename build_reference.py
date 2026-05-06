@@ -7,7 +7,7 @@ Output: templates/reference_header.docx
 """
 
 import os, sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from templates.docx_header import (
     new_document, build_navy_header,

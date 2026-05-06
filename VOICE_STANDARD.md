@@ -118,7 +118,7 @@ Never use Sincerely, Best regards, Best, Thank you, Kind regards, or any other c
 
 ## Automatic Enforcement
 
-This standard is enforced by [`anti_ai_scan.py`](./anti_ai_scan.py), called at the bottom of every `build_*.py` script:
+This standard is enforced by [`templates/anti_ai_scan.py`](./templates/anti_ai_scan.py), called at the bottom of every `build_*.py` script:
 
 ```python
 from templates.anti_ai_scan import scan_pdf
@@ -138,4 +138,4 @@ Update this file when:
 3. A new voice marker (empathetic phrase, narrative anchor) proves effective in a successful application
 4. The narrator facts change (age, retirement status, certifications, education)
 
-Always update the canonical phrase list in `anti_ai_scan.py` (`FORBIDDEN_PHRASES` or `EXTRA_FLAGGED`) at the same time so the rule is enforced automatically.
+Always update the canonical phrase list in `templates/anti_ai_scan.py` (`FORBIDDEN_PHRASES` or `EXTRA_FLAGGED`) at the same time so the rule is enforced automatically.
