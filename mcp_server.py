@@ -92,7 +92,7 @@ def _safe_resolve(filename: str) -> Path:
     Raises ValueError on path traversal attempts.
     """
     target = (REPO_ROOT / filename).resolve()
-    if REPO_ROOT not in target.parents and target != REPO_ROOT:
+    if not (target == REPO_ROOT or REPO_ROOT in target.parents):
         raise ValueError(f"Access denied: '{filename}' resolves outside the repository.")
     return target
 
@@ -146,24 +146,28 @@ def read_file(filename: str) -> str:
 
 
 @mcp.tool()
-def search_files(pattern: str, glob: str = "*.md *.py *.json *.txt") -> str:
+def search_files(
+    pattern: str,
+    glob: list[str] | None = None,
+) -> str:
     """
     Search all repo text files for lines matching a regex pattern.
 
     Parameters
     ----------
     pattern:
-        A Python regex pattern (case-insensitive). Keep it simple —
-        plain text searches work fine, e.g. "navy" or "forbidden phrase".
+        A Python regex pattern (case-insensitive). Plain text searches work
+        fine, e.g. "navy" or "forbidden phrase".
     glob:
-        Space-separated glob patterns that restrict which files are searched.
-        Defaults to Markdown, Python, JSON, and plain-text files.
+        List of filename glob patterns that restrict which files are searched.
+        Defaults to ["*.md", "*.py", "*.json", "*.txt"].
 
     Returns a list of matching lines formatted as:
         <filename>:<line_number>: <line_content>
     Limited to 200 matches to keep responses manageable.
     """
-    globs = glob.split()
+    if glob is None:
+        glob = ["*.md", "*.py", "*.json", "*.txt"]
     try:
         regex = re.compile(pattern, re.IGNORECASE)
     except re.error as exc:
@@ -172,7 +176,7 @@ def search_files(pattern: str, glob: str = "*.md *.py *.json *.txt") -> str:
     results: list[str] = []
     for path in _repo_text_files():
         rel = path.relative_to(REPO_ROOT).as_posix()
-        if not any(fnmatch.fnmatch(path.name, g) for g in globs):
+        if not any(fnmatch.fnmatch(path.name, g) for g in glob):
             continue
         try:
             for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
