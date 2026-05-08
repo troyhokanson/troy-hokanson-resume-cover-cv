@@ -30,6 +30,7 @@ jobs:
           import os
           from pathlib import Path
           from urllib import request
+          from urllib.error import HTTPError, URLError
 
           owner_repo = os.environ["GITHUB_REPOSITORY"]
           owner, repo = owner_repo.split("/", 1)
@@ -41,8 +42,11 @@ jobs:
                   "Accept": "application/vnd.github+json",
               },
           )
-          with request.urlopen(api_req, timeout=20) as response:
-              repo_meta = json.load(response)
+          try:
+              with request.urlopen(api_req, timeout=20) as response:
+                  repo_meta = json.load(response)
+          except (HTTPError, URLError) as exc:
+              raise SystemExit(f"Failed to read repository metadata from GitHub API: {exc}") from exc
 
           if repo_meta.get("private", True):
               raise SystemExit("Repository must be public so AI tools can fetch standards via raw GitHub URLs.")
@@ -69,9 +73,11 @@ jobs:
           ]
           for rel in raw_checks:
               raw_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{os.environ['GITHUB_SHA']}/{rel}"
-              with request.urlopen(raw_url, timeout=20) as response:
-                  if response.status != 200:
-                      raise SystemExit(f"Raw file is not publicly accessible: {raw_url}")
+              try:
+                  with request.urlopen(raw_url, timeout=20):
+                      pass
+              except (HTTPError, URLError) as exc:
+                  raise SystemExit(f"Raw file is not publicly accessible for AI tools: {raw_url} ({exc})") from exc
           PY
 
       - name: Install dependencies
