@@ -12,3 +12,6 @@ pypdf>=4.0.0
 
 # PDF text extraction for anti-AI scan (anti_ai_scan.py)
 pdfplumber>=0.10.0
+
+# Test runner (used by local development and GitHub Actions)
+pytest>=8.0.0
