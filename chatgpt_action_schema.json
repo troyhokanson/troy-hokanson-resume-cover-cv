@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Troy Hokanson Document Standards Fetcher",
-    "description": "Fetches the live HEADER_STANDARD.md and VOICE_STANDARD.md from the public GitHub repository to enforce formatting and voice rules on generated resumes and cover letters.",
-    "version": "1.0.0"
+    "description": "Fetches the live locked-standard documents from the public GitHub repository to enforce formatting and voice rules on generated resumes and cover letters. Fetch HEADER_STANDARD.md and VOICE_STANDARD.md before writing any document.",
+    "version": "1.1.0"
   },
   "servers": [
     {
@@ -14,18 +14,20 @@
     "/troyhokanson/troy-hokanson-resume-cover-cv/main/{filename}": {
       "get": {
         "operationId": "fetchStandardDocument",
-        "summary": "Fetch a standard document (HEADER_STANDARD.md or VOICE_STANDARD.md) from the GitHub repository.",
+        "summary": "Fetch one of the four locked-standard documents from the GitHub repository.",
         "parameters": [
           {
             "name": "filename",
             "in": "path",
             "required": true,
-            "description": "The name of the standard file to fetch. Must be either HEADER_STANDARD.md or VOICE_STANDARD.md",
+            "description": "The name of the standard file to fetch. HEADER_STANDARD.md (visual layout) and VOICE_STANDARD.md (narrative voice) must both be fetched before writing any resume or cover letter. SYSTEM_PROMPT.md contains the universal AI system prompt. PLATFORM_SETUP.md explains per-platform AI configuration.",
             "schema": {
               "type": "string",
               "enum": [
                 "HEADER_STANDARD.md",
-                "VOICE_STANDARD.md"
+                "VOICE_STANDARD.md",
+                "SYSTEM_PROMPT.md",
+                "PLATFORM_SETUP.md"
               ]
             }
           }

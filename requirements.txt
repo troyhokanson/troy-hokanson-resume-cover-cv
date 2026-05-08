@@ -12,3 +12,6 @@ pypdf>=4.0.0
 
 # PDF text extraction for anti-AI scan (anti_ai_scan.py)
 pdfplumber>=0.10.0
+
+# MCP server (mcp_server.py) — read-only repo access for Claude, ChatGPT, etc.
+mcp>=1.2.0

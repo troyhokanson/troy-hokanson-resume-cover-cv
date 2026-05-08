@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "troy-hokanson-standards": {
+      "command": "python",
+      "args": ["/path/to/troy-hokanson-resume-cover-cv/mcp_server.py"],
+      "env": {}
+    }
+  }
+}

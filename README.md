@@ -22,6 +22,9 @@ troy-hokanson-resume-cover-cv/
 ├── pdf_header.py           # Locked PDF page-1 header renderer
 ├── anti_ai_scan.py         # Automatic voice/anti-AI enforcement gate
 ├── build_reference.py      # Rebuilds reference_header.docx after any header change
+├── mcp_server.py           # Read-only MCP server (Claude Desktop, ChatGPT, Cursor, etc.)
+├── claude_desktop_config.json  # Ready-to-paste Claude Desktop MCP config snippet
+├── chatgpt_action_schema.json  # OpenAPI schema for ChatGPT Actions (all 4 standard docs)
 ├── reference_header.docx   # Visual ground truth — diff against every new build
 ├── requirements.txt        # Python dependencies
 ├── fonts/
@@ -33,7 +36,7 @@ troy-hokanson-resume-cover-cv/
 ├── VOICE_STANDARD.md       # Troy's permanent voice standard
 ├── SYSTEM_PROMPT.md        # Copy-paste system prompt for custom AI setups
 ├── PLATFORM_SETUP.md       # How to configure ChatGPT, Claude, Gemini, etc.
-└── chatgpt_action_schema.json  # OpenAPI schema for ChatGPT Actions
+└── MCP_SETUP.md            # MCP server setup guide (Claude Desktop, ChatGPT, Cursor, etc.)
 ```
 
 ---
