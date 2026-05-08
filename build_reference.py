@@ -7,9 +7,15 @@ Output: templates/reference_header.docx
 """
 
 import os, sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from templates.docx_header import (
+# Allow running directly from the repo root (`python build_reference.py`) as
+# well as via the workspace/templates symlink (`python templates/build_reference.py`).
+# In both cases __file__ resolves to the repo directory when made absolute.
+_here = os.path.dirname(os.path.abspath(__file__))
+if _here not in sys.path:
+    sys.path.insert(0, _here)
+
+from docx_header import (
     new_document, build_navy_header,
     add_section_heading, add_bullet, add_job_block,
 )

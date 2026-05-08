@@ -21,7 +21,7 @@ Setup on a new device
 GitHub Actions
 --------------
 Add the following repository secrets (Settings -> Secrets -> Actions):
-  TROY_PHONE      e.g.  612.352.8647
+  TROY_PHONE      e.g.  612.555.0000
   TROY_EMAIL      e.g.  TroyHokanson@iCloud.com
   TROY_LOCATION   e.g.  Lakeville, MN
   TROY_LINKEDIN   e.g.  linkedin.com/in/troyhokanson

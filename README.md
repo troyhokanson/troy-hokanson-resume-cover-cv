@@ -135,7 +135,7 @@ Contact details (phone, email, location) are **never hardcoded** in this repo. T
 
 **GitHub Actions (automated builds):**
 Add these secrets under Settings → Secrets and variables → Actions:
-- `TROY_PHONE` — e.g. `612.352.8647`
+- `TROY_PHONE` — e.g. `612.555.0000`
 - `TROY_EMAIL` — e.g. `TroyHokanson@iCloud.com`
 - `TROY_LOCATION` — e.g. `Lakeville, MN`
 - `TROY_LINKEDIN` — e.g. `linkedin.com/in/troyhokanson`
